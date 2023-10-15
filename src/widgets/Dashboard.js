@@ -19,10 +19,8 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems, secondaryListItems } from "./listItems";
 import Chart from "./Chart";
-import Deposits from "./Deposits";
-import Orders from "./Orders";
-import Heatmap from "../assets/heatmap.png"
-import CameraFeed from "../assets/results.gif"
+import Heatmap from "../assets/heatmap.gif"
+import CameraFeed from "../assets/footage.gif"
 import ImageCard from "./ImageCard";
 import ChatButton from "./ChatBox/ChatButton";
 

@@ -23,12 +23,22 @@ export default function ChatLayout() {
 
   const handleSend = (newMessage) => {
     setMessages(prevMessages => {
-      return [...prevMessages, {
-        message: newMessage,
-        sentTime: "just now",
-        sender: "User",
-        direction: "outgoing",
-      }]
+      return [...prevMessages, 
+        ...[
+          {
+            message: newMessage,
+            sentTime: "just now",
+            sender: "User",
+            direction: "outgoing",
+          },
+          {
+            message: "The drinks section was the busiest from 11am to 1pm",
+            sentTime: "just now",
+            sender: "Bot",
+            direction: "incoming",
+          }
+        ]
+      ]
     })
   }
 
