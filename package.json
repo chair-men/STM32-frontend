@@ -12,6 +12,7 @@
     "@mui/material": "^5.14.11",
     "react": "latest",
     "react-dom": "latest",
+    "react-image-annotation": "^0.9.10",
     "react-scripts": "latest",
     "recharts": "^2.8.0"
   },

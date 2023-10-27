@@ -19,10 +19,25 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems, secondaryListItems } from "./listItems";
 import Chart from "./Chart";
-import Heatmap from "../assets/heatmap.gif"
-import CameraFeed from "../assets/footage.gif"
+import Heatmap from "../assets/heatmap.gif";
+import CameraFeed from "../assets/footage.gif";
 import ImageCard from "./ImageCard";
 import ChatButton from "./ChatBox/ChatButton";
+import Modal from "@mui/material/Modal";
+import HeatmapImage from "../assets/heatmap.jpg"
+import ImageSegmentation from "./ImageSegmentation";
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "50%",
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 function Copyright(props) {
   return (
@@ -96,6 +111,13 @@ export default function Dashboard() {
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const [openModal, setOpenModal] = React.useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
+  const [annotations, setAnnotations] = React.useState([]);
+  const [annotation, setAnnotation] = React.useState({});
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -171,10 +193,37 @@ export default function Dashboard() {
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={10}>
               {/* Video Feed */}
-              <ImageCard description="Live Video Feed" src={CameraFeed} alt="CameraFeed" />
+              <ImageCard
+                description="Live Video Feed"
+                src={CameraFeed}
+                alt="CameraFeed"
+              />
 
               {/* Heatmap */}
-              <ImageCard description="Heatmap" src={Heatmap} alt="Heatmap" />
+              <ImageCard
+                description="Heatmap"
+                src={Heatmap}
+                alt="Heatmap"
+                onClick={() => handleOpenModal()}
+              />
+
+              {/* Modal */}
+              <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box sx={modalStyle}>
+                  <ImageSegmentation 
+                    src={HeatmapImage} 
+                    annotations={annotations}
+                    setAnnotations={setAnnotations}
+                    annotation={annotation}
+                    setAnnotation={setAnnotation}
+                  />
+                </Box>
+              </Modal>
 
               {/* Chart */}
               <Grid item xs={12}>
@@ -189,25 +238,6 @@ export default function Dashboard() {
                   <Chart />
                 </Paper>
               </Grid>
-              {/* Recent Deposits */}
-              {/* <Grid item xs={12} md={4} lg={3}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: 240,
-                  }}
-                >
-                  <Deposits />
-                </Paper>
-              </Grid> */}
-              {/* Recent Orders */}
-              {/* <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Orders />
-                </Paper>
-              </Grid> */}
             </Grid>
             <Copyright sx={{ pt: 4 }} />
           </Container>
