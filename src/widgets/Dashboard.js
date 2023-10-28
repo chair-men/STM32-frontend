@@ -24,7 +24,7 @@ import CameraFeed from "../assets/footage.gif";
 import ImageCard from "./ImageCard";
 import ChatButton from "./ChatBox/ChatButton";
 import Modal from "@mui/material/Modal";
-import HeatmapImage from "../assets/heatmap.jpg"
+import HeatmapImage from "../assets/heatmap.jpg";
 import ImageSegmentation from "./ImageSegmentation";
 
 const modalStyle = {
@@ -118,6 +118,47 @@ export default function Dashboard() {
 
   const [annotations, setAnnotations] = React.useState([]);
   const [annotation, setAnnotation] = React.useState({});
+
+  const [chartData, setChartData] = React.useState({});
+  const [chartNames, setChartNames] = React.useState([]);
+  const [activeName, setActiveName] = React.useState("");
+  const [maxActivity, setMaxActivity] = React.useState(0);
+
+  // Generate Sales Data
+  function createData(time, amount) {
+    setMaxActivity((prevMaxActivity) => Math.max(prevMaxActivity, amount));
+    return { time, amount };
+  }
+
+  React.useEffect(() => {
+    fetch("http://127.0.0.1:5000/retrieve_locations")
+      .then((response) => response.json())
+      .then((data) => {
+        setChartNames(Object.keys(data));
+        setActiveName(Object.keys(data)[0]);
+
+        Object.keys(data).forEach(function (key) {
+          let d = data[key];
+          d.forEach((value, index, array) => {
+            array[index] = createData(...value);
+          });
+
+          setChartData((prevState) => ({
+            ...prevState,
+            [key]: d,
+          }));
+        });
+      })
+      .catch((error) => console.log(error));
+
+      fetch("http://127.0.0.1:5000/retrieve_sections")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setAnnotations(data);
+      })
+      .catch((error) => console.log(error));
+  }, [openModal]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -215,8 +256,8 @@ export default function Dashboard() {
                 aria-describedby="modal-modal-description"
               >
                 <Box sx={modalStyle}>
-                  <ImageSegmentation 
-                    src={HeatmapImage} 
+                  <ImageSegmentation
+                    src={HeatmapImage}
                     annotations={annotations}
                     setAnnotations={setAnnotations}
                     annotation={annotation}
@@ -235,7 +276,13 @@ export default function Dashboard() {
                     height: 360,
                   }}
                 >
-                  <Chart />
+                  <Chart
+                    chartData={chartData}
+                    chartNames={chartNames}
+                    activeName={activeName}
+                    setActiveName={setActiveName}
+                    maxActivity={maxActivity}
+                  />
                 </Paper>
               </Grid>
             </Grid>

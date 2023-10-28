@@ -16,6 +16,7 @@ export default function ImageSegmentation({
 }) {
   const [activeAnnotations, setActiveAnnotations] = useState([]);
   const [areaCoordinates, setAreaCoordinates] = useState({});
+  const [imageDims, setImageDims] = useState({});
   const type = "RECTANGLE";
 
   useEffect(() => {
@@ -23,8 +24,10 @@ export default function ImageSegmentation({
     img.src = src;
 
     img.onload = () => {
-      console.log(img.height);
-      console.log(img.width);
+      setImageDims({
+        "width": img.width,
+        "height": img.height
+      })
     };
   }, []);
 
@@ -37,8 +40,8 @@ export default function ImageSegmentation({
     setAreaCoordinates(geometry);
 
     setAnnotation({});
-    setAnnotations([
-      ...annotations,
+    setAnnotations((prevAnnotations) => [
+      ...prevAnnotations,
       {
         geometry,
         data: {
@@ -47,11 +50,11 @@ export default function ImageSegmentation({
         },
       },
     ]);
-    console.log(annotations);
   };
 
   const onMouseOver = (id) => (e) => {
     setActiveAnnotations([...activeAnnotations, id]);
+    console.log(annotations);
   };
 
   const onMouseOut = (id) => (e) => {
@@ -63,6 +66,14 @@ export default function ImageSegmentation({
     ]);
   };
 
+  const onDelete = (id) => e => {
+    const index = annotations.indexOf(id);
+    setAnnotations([
+      ...annotations.slice(0, index),
+      ...annotations.slice(index, 0),
+    ])
+  }
+
   const activeAnnotationComparator = (a, b) => {
     return a.data.id === b;
   };
@@ -72,12 +83,42 @@ export default function ImageSegmentation({
     setAnnotations([]);
   };
 
+  const onSave = () => {
+    let jsonData = {
+      "image_dims": imageDims,
+      "sections": []
+    }
+    annotations.forEach((annotation) => {
+      jsonData["sections"].push({
+        "text": annotation.data.text,
+        "x": annotation.geometry.x,
+        "y": annotation.geometry.y,
+        "height": annotation.geometry.height,
+        "width": annotation.geometry.width,
+      })
+    });
+
+    fetch('http://127.0.0.1:5000/update', {
+      method: 'POST',
+      // mode: 'cors', 
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(jsonData)
+    })
+    .catch((error) => console.log(error));
+  }
+
   return (
     <div className="segment-container">
       <div className="image-container">
         <div className="buttons-container">
           <Button variant="contained" onClick={() => onClear()}>
             Clear Annotations
+          </Button>
+          <Button variant="contained" onClick={() => onSave()}>
+            Save Changes
           </Button>
         </div>
         <Annotation
@@ -114,7 +155,7 @@ export default function ImageSegmentation({
         component="nav"
         aria-labelledby="nested-list-subheader"
         subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
+          <ListSubheader component="div" id="nested-list-subheader" sx={{ width: "fit-content"}}>
             Sections
           </ListSubheader>
         }
@@ -123,6 +164,7 @@ export default function ImageSegmentation({
           <ListItemButton
             onMouseOver={onMouseOver(annotation.data.id)}
             onMouseOut={onMouseOut(annotation.data.id)}
+            onClick={onDelete(annotation.data.id)}
             key={annotation.data.id}
           >
             <ListItemText primary={annotation.data.text} />
