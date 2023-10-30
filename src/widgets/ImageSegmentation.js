@@ -70,7 +70,7 @@ export default function ImageSegmentation({
     const index = annotations.indexOf(id);
     setAnnotations([
       ...annotations.slice(0, index),
-      ...annotations.slice(index, 0),
+      ...annotations.slice(index + 1),
     ])
   }
 
