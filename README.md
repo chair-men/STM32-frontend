@@ -8,5 +8,7 @@
 
 ## To deploy app
 
-1. `yarn install`
-2. `yarn start`
+```
+yarn install
+yarn start
+```
