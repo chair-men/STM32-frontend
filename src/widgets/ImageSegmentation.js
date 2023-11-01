@@ -54,7 +54,6 @@ export default function ImageSegmentation({
 
   const onMouseOver = (id) => (e) => {
     setActiveAnnotations([...activeAnnotations, id]);
-    console.log(annotations);
   };
 
   const onMouseOut = (id) => (e) => {
@@ -66,12 +65,10 @@ export default function ImageSegmentation({
     ]);
   };
 
-  const onDelete = (id) => e => {
-    const index = annotations.indexOf(id);
-    setAnnotations([
-      ...annotations.slice(0, index),
-      ...annotations.slice(index + 1),
-    ])
+  const onDelete = (index) => e => {
+    console.log(annotations);
+    annotations.splice(index, 1);
+    setAnnotations(annotations);
   }
 
   const activeAnnotationComparator = (a, b) => {
@@ -160,11 +157,11 @@ export default function ImageSegmentation({
           </ListSubheader>
         }
       >
-        {annotations.map((annotation) => (
+        {annotations.map((annotation, i) => (
           <ListItemButton
             onMouseOver={onMouseOver(annotation.data.id)}
             onMouseOut={onMouseOut(annotation.data.id)}
-            onClick={onDelete(annotation.data.id)}
+            onClick={onDelete(i)}
             key={annotation.data.id}
           >
             <ListItemText primary={annotation.data.text} />
