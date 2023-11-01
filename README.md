@@ -1,5 +1,7 @@
 # Dashboard
 
+This repository contains the code for the frontend of the dashboard
+
 ## Features
 
 1. Live tracking of customers.
@@ -8,5 +10,7 @@
 
 ## To deploy app
 
-1. `npm install`
-2. `npm start`
+```
+yarn install
+yarn start
+```
