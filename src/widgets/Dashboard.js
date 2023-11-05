@@ -17,10 +17,16 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, secondaryListItems } from "./listItems";
+import { mainListItems, secondaryListItems, ReportItems } from "./listItems";
 import Chart from "./Chart";
-import Heatmap from "../assets/heatmap.gif";
-import CameraFeed from "../assets/footage.gif";
+
+import TodayHeatmap from "../assets/today-heatmap.gif";
+import TodayVideo from "../assets/today-video.gif";
+import YesterdayHeatmap from "../assets/yesterday-heatmap.gif";
+import YesterdayVideo from "../assets/yesterday-video.gif";
+import OtotoiHeatmap from "../assets/ototoi-heatmap.gif";
+import OtotoiVideo from "../assets/ototoi-video.gif";
+
 import ImageCard from "./ImageCard";
 import ChatButton from "./ChatBox/ChatButton";
 import Modal from "@mui/material/Modal";
@@ -124,6 +130,8 @@ export default function Dashboard() {
   const [activeName, setActiveName] = React.useState("");
   const [maxActivity, setMaxActivity] = React.useState(0);
 
+  const [reportIndex, setReportIndex] = React.useState(0);
+
   // Generate Sales Data
   function createData(time, amount) {
     setMaxActivity((prevMaxActivity) => Math.max(prevMaxActivity, amount));
@@ -131,7 +139,7 @@ export default function Dashboard() {
   }
 
   React.useEffect(() => {
-    fetch("http://127.0.0.1:5000/retrieve_locations")
+    fetch(`http://127.0.0.1:5000/retrieve_locations?before=${reportIndex ?? 0}`)
       .then((response) => response.json())
       .then((data) => {
         setChartNames(Object.keys(data));
@@ -151,14 +159,14 @@ export default function Dashboard() {
       })
       .catch((error) => console.log(error));
 
-    fetch("http://127.0.0.1:5000/retrieve_sections")
+    fetch(`http://127.0.0.1:5000/retrieve_sections`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
         setAnnotations(data);
       })
       .catch((error) => console.log(error));
-  }, [openModal]);
+  }, [openModal, reportIndex]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -215,7 +223,7 @@ export default function Dashboard() {
           <List component="nav">
             {mainListItems}
             <Divider sx={{ my: 1 }} />
-            {secondaryListItems}
+            <ReportItems setReportIndex={setReportIndex} />
           </List>
         </Drawer>
         <Box
@@ -235,15 +243,27 @@ export default function Dashboard() {
             <Grid container spacing={10}>
               {/* Video Feed */}
               <ImageCard
-                description="Live Video Feed"
-                src={CameraFeed}
+                description={`${reportIndex === 0 ? "Live " : ""}Video Feed`}
+                src={
+                  reportIndex === 0
+                    ? TodayVideo
+                    : reportIndex === 1
+                    ? YesterdayVideo
+                    : OtotoiVideo
+                }
                 alt="CameraFeed"
               />
 
               {/* Heatmap */}
               <ImageCard
                 description="Heatmap"
-                src={Heatmap}
+                src={
+                  reportIndex === 0
+                    ? TodayHeatmap
+                    : reportIndex === 1
+                    ? YesterdayHeatmap
+                    : OtotoiHeatmap
+                }
                 alt="Heatmap"
                 onClick={() => handleOpenModal()}
               />

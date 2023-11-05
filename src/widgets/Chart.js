@@ -86,7 +86,7 @@ export default function Chart({
                       ...theme.typography.body1,
                     }}
                   >
-                    Activity (%)
+                    Activity
                   </Label>
                 </YAxis>
                 <Line
